@@ -1,0 +1,43 @@
+
+name: Build Kasir Warung APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - utama
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Ambil source
+        uses: actions/checkout@v4
+
+      - name: Siapkan Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Siapkan Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Siapkan Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Ekstrak project
+        run: |
+          unzip -o KasirWarung-Android-Project-Unduh-Ulang.zip -d .
+
+      - name: Build APK
+        run: gradle -p KasirWarung-Android assembleDebug
+
+      - name: Simpan APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kasir-Warung-APK
+          path: KasirWarung-Android/app/build/outputs/apk/debug/*.apk
